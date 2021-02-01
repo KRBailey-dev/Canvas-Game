@@ -1,11 +1,11 @@
-// Create the canvas
+//Canvas for game
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
 canvas.width = 512;
 canvas.height = 480;
 document.body.appendChild(canvas);
 
-// Background image
+//Background image
 var bgReady = false;
 var bgImage = new Image();
 bgImage.onload = function () {
@@ -29,14 +29,19 @@ monsterImage.onload = function () {
 };
 monsterImage.src = "images/monster.png";
 
-// Game objects
+//Game objects
 var hero = {
-	speed: 256 // movement in pixels per second
+	speed: 256, 
+	x: 0,
+	y: 0
 };
-var monster = {};
+var monster = {
+	x: 0,
+	y: 0
+};
 var monstersCaught = 0;
 
-// Handle keyboard controls
+// Keyboard Controls
 var keysDown = {};
 
 addEventListener("keydown", function (e) {
@@ -47,32 +52,31 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
-// Reset the game when the player catches a monster
+// Reset Monster when caught
 var reset = function () {
 	hero.x = canvas.width / 2;
 	hero.y = canvas.height / 2;
 
-	// Throw the monster somewhere on the screen randomly
 	monster.x = 32 + (Math.random() * (canvas.width - 64));
 	monster.y = 32 + (Math.random() * (canvas.height - 64));
 };
 
-// Update game objects
+// Updating objects
 var update = function (modifier) {
-	if (38 in keysDown) { // Player holding up
+	if (38 in keysDown) { // 38 = uparrow
 		hero.y -= hero.speed * modifier;
 	}
-	if (40 in keysDown) { // Player holding down
+	if (40 in keysDown) { // 40 = downarrow
 		hero.y += hero.speed * modifier;
 	}
-	if (37 in keysDown) { // Player holding left
+	if (37 in keysDown) { // 37 = leftarrow
 		hero.x -= hero.speed * modifier;
 	}
-	if (39 in keysDown) { // Player holding right
+	if (39 in keysDown) { // 39 = rightarrow
 		hero.x += hero.speed * modifier;
 	}
 
-	// Are they touching?
+	// hero and enemy contact check
 	if (
 		hero.x <= (monster.x + 32)
 		&& monster.x <= (hero.x + 32)
@@ -84,7 +88,7 @@ var update = function (modifier) {
 	}
 };
 
-// Draw everything
+// Drawing the everything on screen
 var render = function () {
 	if (bgReady) {
 		ctx.drawImage(bgImage, 0, 0);
@@ -106,7 +110,7 @@ var render = function () {
 	ctx.fillText("Goblins caught: " + monstersCaught, 32, 32);
 };
 
-// The main game loop
+// The Game Loop
 var main = function () {
 	var now = Date.now();
 	var delta = now - then;
@@ -116,15 +120,17 @@ var main = function () {
 
 	then = now;
 
-	// Request to do this again ASAP
+	// Requests the game to loop ASAP
 	requestAnimationFrame(main);
 };
 
-// Cross-browser support for requestAnimationFrame
+
+// Old way of browser support - game can be played on any browser
 var w = window;
 requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame || w.msRequestAnimationFrame || w.mozRequestAnimationFrame;
 
-// Let's play this game!
+
+// Game ready to play!
 var then = Date.now();
 reset();
 main();
